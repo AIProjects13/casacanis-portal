@@ -143,6 +143,19 @@ function authShell(inner) {
     </aside>
     <section class="auth-panel"><div><div class="auth-card">${inner}</div>
       <a class="back-site" href="${CONFIG.sitio}">← Volver al sitio de Casa Canis</a></div></section></div>`;
+  ponerOjos(root());
+}
+
+// Botón para mostrar u ocultar la contraseña en todos los campos de contraseña
+function ponerOjos(host) {
+  host.querySelectorAll('input[type=password]').forEach((inp) => {
+    if (inp.parentElement.classList.contains('pw')) return;
+    const w = document.createElement('div');
+    w.className = 'pw';
+    inp.parentNode.insertBefore(w, inp);
+    w.appendChild(inp);
+    w.insertAdjacentHTML('beforeend', `<button type="button" class="pw-btn" data-action="verClave" aria-label="Mostrar contraseña" title="Mostrar u ocultar">${ico('eye', 18)}</button>`);
+  });
 }
 
 function renderAuth(tab = 'login', aviso = '') {
@@ -202,8 +215,8 @@ function renderAuth(tab = 'login', aviso = '') {
       S.registrando = true;
       try {
         const cred = await createUserWithEmailAndPassword(auth, String(f.email).trim(), String(f.password));
-        await api('registrarCliente', { nombre: f.nombre, telefono: f.telefono, aceptaTerminos: true });
         sendEmailVerification(cred.user).catch(() => {});
+        await api('registrarCliente', { nombre: f.nombre, telefono: f.telefono, aceptaTerminos: true });
         S.registrando = false;
         await cargar();
       } catch (x) {
@@ -234,10 +247,23 @@ function renderCompletar() {
   };
 }
 
-function renderVerificar() {
-  authShell(`<h1>Verifica tu correo</h1><p class="sub">Para continuar, abre el enlace que te enviamos por correo y vuelve a entrar.</p>
-    <button class="btn btn-dark btn-full" id="salir">Cerrar sesión</button>`);
+function renderVerificar(aviso = '') {
+  const correo = auth.currentUser?.email || '';
+  authShell(`<h1>Verifica tu correo</h1>
+    <p class="sub">Te enviamos un enlace a <b>${esc(correo)}</b>. Ábrelo y luego toca "Ya lo verifiqué". Si no lo ves, revisa la carpeta de spam o correo no deseado.</p>
+    ${aviso ? `<div class="form-ok">${esc(aviso)}</div>` : ''}<div id="auth-error"></div>
+    <button class="btn btn-dark btn-full" id="ya">Ya lo verifiqué</button>
+    <button class="btn btn-ghost btn-full" id="reenviar" style="margin-top:.7rem">Reenviar el correo</button>
+    <div class="auth-foot"><button type="button" class="link" id="salir">Cerrar sesión</button></div>`);
   $('#salir').onclick = () => signOut(auth);
+  $('#reenviar').onclick = async () => {
+    try { await sendEmailVerification(auth.currentUser); renderVerificar('Listo, te enviamos el correo de nuevo.'); }
+    catch (e) { $('#auth-error').innerHTML = `<div class="form-error">${esc(mensajeAuth(e))}</div>`; }
+  };
+  $('#ya').onclick = async () => {
+    try { await auth.currentUser.reload(); await auth.currentUser.getIdToken(true); } catch (e) { /* se reintenta abajo */ }
+    await cargar();
+  };
 }
 
 function renderEstadoCliente() {
@@ -384,7 +410,7 @@ function render() {
   const scroll = window.scrollY;
   root().innerHTML = `<div class="shell ${menuAbierto ? 'menu-open' : ''}">
     <aside class="sidebar">
-      <div class="brand"><div class="logo-mini"><img src="logo.png" alt=""></div><div><span>Casa Canis</span><small>Portal</small></div></div>
+      <div class="brand"><div class="logo-mini"><img src="logo.png" alt="Casa Canis"></div><small class="portal-tag">Portal</small></div>
       <nav class="nav">${NAV[m.Rol].map(([id, ic, tit]) => `<a href="#/${id}" class="${id === v ? 'active' : ''}">${ico(ic)} ${tit}${id === 'clientes' && pendientes ? `<span class="badge-n">${pendientes}</span>` : ''}</a>`).join('')}</nav>
       <div class="user">${avatar(m.Nombre, 2)}<div class="meta"><b>${esc(m.Nombre)}</b><small>${ROL[m.Rol]}${m.Puesto ? ' · ' + esc(m.Puesto) : ''}</small></div>
         <button data-action="salir" title="Cerrar sesión" aria-label="Cerrar sesión">${ico('logout', 16)}</button></div>
@@ -691,6 +717,14 @@ function buscarTarea(id) {
 const campo = (n, l, v = '', extra = '') => `<div class="field"><label>${l}</label><input name="${n}" value="${esc(v)}" ${extra}></div>`;
 
 const ACTIONS = {
+  verClave: (el) => {
+    const inp = el.parentElement.querySelector('input');
+    const ver = inp.type === 'password';
+    inp.type = ver ? 'text' : 'password';
+    el.innerHTML = ico(ver ? 'eyeoff' : 'eye', 18);
+    el.setAttribute('aria-label', ver ? 'Ocultar contraseña' : 'Mostrar contraseña');
+    inp.focus();
+  },
   salir: () => signOut(auth),
   menu: () => $('.shell')?.classList.toggle('menu-open'),
 

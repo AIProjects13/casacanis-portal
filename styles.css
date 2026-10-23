@@ -96,9 +96,8 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .auth-brand::before { width: 420px; height: 420px; right: -120px; top: -100px; background: radial-gradient(circle, rgba(178, 151, 23, 0.55), transparent 70%); }
 .auth-brand::after { width: 360px; height: 360px; left: -120px; bottom: -90px; background: radial-gradient(circle, rgba(178, 151, 23, 0.28), transparent 70%); animation-delay: -6s; }
 .auth-brand > * { position: relative; z-index: 1; }
-.logo-badge { width: 112px; height: 112px; background: var(--beige); border-radius: 30px; display: grid; place-items: center; box-shadow: 0 20px 40px -16px rgba(0, 0, 0, 0.6); animation: pop 0.8s var(--ease) both; }
-.logo-badge { overflow: hidden; }
-.logo-badge img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 44%; transform: scale(1.75); }
+.logo-badge { width: 320px; max-width: 100%; background: var(--beige); border-radius: 28px; padding: 0.4rem; display: grid; place-items: center; box-shadow: 0 20px 40px -16px rgba(0, 0, 0, 0.6); animation: pop 0.8s var(--ease) both; }
+.logo-badge img { width: 100%; height: auto; display: block; }
 .auth-brand h2 { font-family: var(--serif); font-size: clamp(1.7rem, 3vw, 2.5rem); line-height: 1.2; font-weight: 600; max-width: 460px; animation: rise 0.9s 0.15s var(--ease) both; }
 .auth-brand h2 span { color: var(--gold); }
 .auth-brand p { color: rgba(233, 227, 211, 0.75); max-width: 420px; margin-top: 1rem; animation: rise 0.9s 0.3s var(--ease) both; }
@@ -121,10 +120,10 @@ button, input, select, textarea { font: inherit; color: inherit; }
     background: linear-gradient(170deg, var(--forest) 0%, var(--forest-2) 100%); box-shadow: var(--shadow); }
 .sidebar::before { content: ''; position: absolute; width: 260px; height: 260px; right: -110px; top: -90px; background: radial-gradient(circle, rgba(178, 151, 23, 0.4), transparent 70%); pointer-events: none; }
 .sidebar > * { position: relative; }
-.sidebar .brand { display: flex; align-items: center; gap: 0.75rem; padding: 0.2rem 0.4rem 1.4rem; }
-.sidebar .brand .logo-mini { width: 46px; height: 46px; background: var(--beige); border-radius: 15px; display: grid; place-items: center; }
-.sidebar .brand .logo-mini { overflow: hidden; }
-.sidebar .brand .logo-mini img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 44%; transform: scale(1.75); }
+.sidebar .brand { display: flex; flex-direction: column; align-items: center; gap: 0.5rem; padding: 0 0.2rem 1.2rem; }
+.sidebar .brand .logo-mini { width: 100%; background: var(--beige); border-radius: 20px; padding: 0.3rem; display: grid; place-items: center; }
+.sidebar .brand .portal-tag { font-family: var(--sans); font-weight: 600; font-size: 0.66rem; color: var(--gold); letter-spacing: 0.22em; text-transform: uppercase; }
+.sidebar .brand .logo-mini img { width: 100%; height: auto; display: block; }
 .sidebar .brand span { font-family: var(--serif); font-weight: 700; font-size: 1.1rem; line-height: 1.1; }
 .sidebar .brand small { display: block; font-family: var(--sans); font-weight: 500; font-size: 0.66rem; color: var(--gold); letter-spacing: 0.14em; text-transform: uppercase; margin-top: 0.15rem; }
 .nav { display: flex; flex-direction: column; gap: 4px; flex: 1; overflow-y: auto; }
@@ -209,7 +208,7 @@ td.acciones .btn { margin-left: 0.3rem; }
     .auth-wrap { grid-template-columns: 1fr; }
     .auth-brand { padding: 1.4rem 1.5rem; flex-direction: row; align-items: center; gap: 1rem; }
     .auth-brand h2, .auth-brand p, .auth-brand small { display: none; }
-    .logo-badge { width: 64px; height: 64px; border-radius: 20px; }
+    .logo-badge { width: 190px; border-radius: 22px; }
     .auth-panel { align-items: start; padding-top: 2rem; }
     .shell { grid-template-columns: 1fr; }
     .sidebar { position: fixed; left: 0; top: 0; bottom: 0; width: 290px; margin: 10px; height: calc(100vh - 20px); transform: translateX(-120%); transition: transform 0.4s var(--ease); z-index: 1500; }
@@ -293,3 +292,9 @@ td.acciones .btn { margin-left: 0.3rem; }
     .week-cards { grid-template-columns: 1fr; }
     .weeknav .weeklabel { min-width: 120px; }
 }
+
+/* Campo de contraseña con botón de mostrar/ocultar */
+.pw { position: relative; }
+.pw input { padding-right: 3rem; }
+.pw-btn { position: absolute; right: 0.5rem; top: 50%; transform: translateY(-50%); width: 36px; height: 36px; border: 0; background: transparent; color: var(--muted); border-radius: 12px; cursor: pointer; display: grid; place-items: center; transition: color 0.2s, background 0.2s; }
+.pw-btn:hover { color: var(--forest); background: var(--gold-soft); }
